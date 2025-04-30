@@ -1,117 +1,104 @@
-import { useState, useEffect } from "react";
-import { obtenerTareas } from "../api/tareasApi"; // <-- este es tu API para traer tareas
+import { useEffect, useState } from "react";
+import { obtenerTareas } from "../api/tareasApi";
 
-function SprintFormulario({ sprintInicial = {}, onSubmit }) {
-  const [sprint, setSprint] = useState({
-    nombreSprint: sprintInicial.nombreSprint || "",
-    fechaInicio: sprintInicial.fechaInicio?.slice(0, 10) || "",
-    fechaFin: sprintInicial.fechaFin?.slice(0, 10) || "",
-    listaTareas: sprintInicial.listaTareas || [],
-    color: sprintInicial.color || "",
-  });
-
+function SprintFormulario({ onSubmit, initialData = {} }) {
+  const [nombreSprint, setNombreSprint] = useState(
+    initialData.nombreSprint || ""
+  );
+  const [fechaInicio, setFechaInicio] = useState(
+    initialData.fechaInicio?.slice(0, 10) || ""
+  );
+  const [fechaFin, setFechaFin] = useState(
+    initialData.fechaFin?.slice(0, 10) || ""
+  );
+  const [color, setColor] = useState(initialData.color || "");
+  const [listaTareas, setListaTareas] = useState(initialData.listaTareas || []);
   const [tareasDisponibles, setTareasDisponibles] = useState([]);
 
   useEffect(() => {
     async function cargarTareas() {
       try {
-        const datos = await obtenerTareas();
-        setTareasDisponibles(datos);
+        const tareas = await obtenerTareas();
+        setTareasDisponibles(tareas);
       } catch (error) {
         console.error("Error al cargar tareas:", error);
       }
     }
-
     cargarTareas();
   }, []);
 
-  const handleChange = (e) => {
-    setSprint({ ...sprint, [e.target.name]: e.target.value });
-  };
-
-  const handleAgregarTarea = (idTarea) => {
-    if (!sprint.listaTareas.includes(idTarea)) {
-      setSprint({ ...sprint, listaTareas: [...sprint.listaTareas, idTarea] });
+  const toggleTarea = (tarea) => {
+    const yaEsta = listaTareas.find((t) => t._id === tarea._id);
+    if (yaEsta) {
+      setListaTareas(listaTareas.filter((t) => t._id !== tarea._id));
+    } else {
+      setListaTareas([...listaTareas, tarea]);
     }
-  };
-
-  const handleQuitarTarea = (idTarea) => {
-    setSprint({
-      ...sprint,
-      listaTareas: sprint.listaTareas.filter((id) => id !== idTarea),
-    });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(sprint);
+    onSubmit({ nombreSprint, fechaInicio, fechaFin, color, listaTareas });
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        name="nombreSprint"
-        value={sprint.nombreSprint}
-        onChange={handleChange}
-        placeholder="Nombre del Sprint"
-        required
-      />
-      <input
-        type="date"
-        name="fechaInicio"
-        value={sprint.fechaInicio}
-        onChange={handleChange}
-        required
-      />
-      <input
-        type="date"
-        name="fechaFin"
-        value={sprint.fechaFin}
-        onChange={handleChange}
-        required
-      />
+      <div>
+        <label>Nombre del Sprint:</label>
+        <input
+          type="text"
+          value={nombreSprint}
+          onChange={(e) => setNombreSprint(e.target.value)}
+          required
+        />
+      </div>
 
-      {/* Selector de color */}
-      <input
-        type="color"
-        name="color"
-        value={sprint.color}
-        onChange={handleChange}
-      />
+      <div>
+        <label>Fecha de Inicio:</label>
+        <input
+          type="date"
+          value={fechaInicio}
+          onChange={(e) => setFechaInicio(e.target.value)}
+          required
+        />
+      </div>
 
-      <h4>Agregar Tareas:</h4>
-      <select onChange={(e) => handleAgregarTarea(e.target.value)}>
-        <option value="">-- Seleccionar tarea --</option>
-        {tareasDisponibles.map((tarea) => (
-          <option key={tarea._id} value={tarea._id}>
-            {tarea.titulo}
-          </option>
-        ))}
-      </select>
+      <div>
+        <label>Fecha de Fin:</label>
+        <input
+          type="date"
+          value={fechaFin}
+          onChange={(e) => setFechaFin(e.target.value)}
+          required
+        />
+      </div>
 
-      {/* Lista de tareas agregadas */}
-      <h4>Tareas en el Sprint:</h4>
-      <ul>
-        {sprint.listaTareas.length > 0 ? (
-          sprint.listaTareas.map((idTarea) => {
-            const tarea = tareasDisponibles.find((t) => t._id === idTarea);
-            return (
-              <li key={idTarea}>
-                {tarea ? tarea.titulo : "Tarea desconocida"}
-                <button
-                  type="button"
-                  onClick={() => handleQuitarTarea(idTarea)}
-                >
-                  Quitar
-                </button>
-              </li>
-            );
-          })
-        ) : (
-          <li>No hay tareas agregadas.</li>
-        )}
-      </ul>
+      <div>
+        <label>Color:</label>
+        <input
+          type="color"
+          value={color}
+          onChange={(e) => setColor(e.target.value)}
+        />
+      </div>
+
+      <div>
+        <label>Tareas:</label>
+        <ul>
+          {tareasDisponibles.map((tarea) => (
+            <li key={tarea._id}>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={listaTareas.some((t) => t._id === tarea._id)}
+                  onChange={() => toggleTarea(tarea)}
+                />
+                {tarea.titulo} - {tarea.estado}
+              </label>
+            </li>
+          ))}
+        </ul>
+      </div>
 
       <button type="submit">Guardar Sprint</button>
     </form>

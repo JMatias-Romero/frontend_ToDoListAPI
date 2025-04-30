@@ -8,13 +8,14 @@ import CrearTareaPage from "./pages/CrearTareaPage";
 import EditarTareaPage from "./pages/EditarTareaPage";
 
 import CrearSprintPage from "./pages/CrearSprintPage";
+import EditarSprintPage from "./pages/EditarSprintPage";
 
 import Navbar from "./components/Navbar";
 
 function App() {
   return (
     <Router>
-      <div>
+      <div className="bg-dark text-white min-vh-100">
         <Navbar />
         <Routes>
           <Route path="/" element={<TareasPage />} />
@@ -23,6 +24,7 @@ function App() {
           <Route path="/crear-tarea" element={<CrearTareaPage />} />
           <Route path="/editar-tarea/:id" element={<EditarTareaPage />} />
           <Route path="/crear-sprint" element={<CrearSprintPage />} />
+          <Route path="/editar-sprint/:id" element={<EditarSprintPage />} />
         </Routes>
       </div>
     </Router>

@@ -3,7 +3,6 @@ import { obtenerSprints } from "../api/sprintsApi";
 import { Link } from "react-router-dom";
 
 import { eliminarSprint } from "../api/sprintsApi";
-import { eliminarTareaDelSprint } from "../api/sprintsApi";
 
 function SprintPage() {
   const [sprints, setSprints] = useState([]);
@@ -34,27 +33,6 @@ function SprintPage() {
     }
   };
 
-  //eliminar tareas en sprints
-  const handleEliminarTarea = async (sprintId, tareaId) => {
-    try {
-      await eliminarTareaDelSprint(sprintId, tareaId);
-      setSprints(
-        sprints.map((sprint) =>
-          sprint._id === sprintId
-            ? {
-                ...sprint,
-                listaTareas: sprint.listaTareas.filter(
-                  (tarea) => tarea._id !== tareaId
-                ),
-              }
-            : sprint
-        )
-      );
-    } catch (error) {
-      console.error("Error al eliminar tarea:", error);
-    }
-  };
-
   if (cargando) return <p>Cargando sprints...</p>;
 
   if (sprints.length === 0) return <p>No hay sprints disponibles.</p>;
@@ -67,8 +45,10 @@ function SprintPage() {
         {sprints.map((sprint) => (
           <li key={sprint._id}>
             <h3>{sprint.nombreSprint}</h3>
-            <p>Inicio: {new Date(sprint.fechaInicio).toLocaleDateString()}</p>
-            <p>Fin: {new Date(sprint.fechaFin).toLocaleDateString()}</p>
+            <p>
+              Inicio: {new Date(sprint.fechaInicio).toLocaleDateString("es-ES")}
+            </p>
+            <p>Fin:{new Date(sprint.fechaFin).toLocaleDateString("es-ES")}</p>
 
             {/* Listar las tareas dentro del sprint */}
             <ul>
@@ -76,15 +56,13 @@ function SprintPage() {
                 sprint.tareas.map((tarea) => (
                   <li key={tarea._id}>
                     {tarea.titulo} - {tarea.estado}
-                    <button onClick={() => handleEliminarTarea(tarea._id)}>
-                      Eliminar Tarea
-                    </button>
                   </li>
                 ))
               ) : (
                 <li>No hay tareas en este sprint.</li>
               )}
             </ul>
+            <Link to={`/editar-sprint/${sprint._id}`}>Editar</Link>
             <button onClick={() => handleEliminarSprint(sprint._id)}>
               Eliminar
             </button>

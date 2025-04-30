@@ -51,8 +51,7 @@ export const eliminarSprint = async (id) => {
   }
 };
 
-// api/sprintsApi.js
-
+//eliminar tarea del sprint
 export const eliminarTareaDelSprint = async (sprintId, tareaId) => {
   const response = await fetch(`/api/sprints/${sprintId}/tareas/${tareaId}`, {
     method: "DELETE",

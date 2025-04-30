@@ -1,45 +1,73 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import SprintFormulario from "../componentes/SprintFormulario"; // Importamos el formulario
-import { obtenerSprint, editarSprint } from "../api/sprintsApi"; // APIs para obtener y editar el sprint
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import {
+  obtenerSprints,
+  obtenerSprintPorId,
+  actualizarSprint,
+  eliminarSprint,
+} from "../api/sprintsApi";
+import SprintFormulario from "../components/SprintFormulario";
 
-function EditarSprintPage() {
+function EditarSprint() {
+  const { id } = useParams();
   const navigate = useNavigate();
-  const { id } = useParams(); // Obtenemos el ID del sprint desde la URL
-  const [sprint, setSprint] = useState(null); // Estado para el sprint a editar
+  const [sprint, setSprint] = useState(null);
+  const [cargando, setCargando] = useState(true);
 
-  // Cargar los datos del sprint cuando se monta el componente
   useEffect(() => {
     async function cargarSprint() {
       try {
-        const datosSprint = await obtenerSprint(id); // Llamada a la API para obtener los datos del sprint
-        setSprint(datosSprint); // Asignamos el sprint al estado
+        const datos = await obtenerSprintPorId(id);
+        const sprintFormateado = {
+          ...datos,
+          fechaInicio: new Date(datos.fechaInicio).toISOString().slice(0, 10),
+          fechaFin: new Date(datos.fechaFin).toISOString().slice(0, 10),
+        };
+        setSprint(sprintFormateado);
       } catch (error) {
-        console.error("Error al cargar el sprint:", error);
+        console.error("Error al cargar sprint:", error);
+      } finally {
+        setCargando(false);
       }
     }
 
     cargarSprint();
   }, [id]);
 
-  // Función que maneja la edición de un sprint
-  const handleEditarSprint = async (sprintEditado) => {
+  const handleActualizar = async (datosActualizados) => {
     try {
-      await editarSprint(id, sprintEditado); // Llamada a la API para editar el sprint
-      navigate("/sprints"); // Redirige a la lista de sprints después de editar
+      await actualizarSprint(id, datosActualizados);
+      navigate("/sprints");
     } catch (error) {
-      console.error("Error al editar el sprint:", error);
+      console.error("Error al actualizar sprint:", error);
     }
   };
 
-  if (!sprint) return <p>Cargando datos del sprint...</p>;
+  const handleEliminar = async () => {
+    if (!confirm("¿Estás seguro que querés eliminar este sprint?")) return;
+    try {
+      await eliminarSprint(id);
+      navigate("/sprints");
+    } catch (error) {
+      console.error("Error al eliminar sprint:", error);
+    }
+  };
+
+  if (cargando) return <p>Cargando sprint...</p>;
+  if (!sprint) return <p>No se encontró el sprint</p>;
 
   return (
     <div>
       <h2>Editar Sprint</h2>
-      <SprintFormulario sprintInicial={sprint} onSubmit={handleEditarSprint} />
+      <SprintFormulario onSubmit={handleActualizar} initialData={sprint} />
+      <button
+        onClick={handleEliminar}
+        style={{ marginTop: "1rem", color: "red" }}
+      >
+        Eliminar Sprint
+      </button>
     </div>
   );
 }
 
-export default EditarSprintPage;
+export default EditarSprint;

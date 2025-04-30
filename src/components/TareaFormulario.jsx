@@ -35,45 +35,72 @@ function TareaFormulario({ tareaInicial, onSubmit }) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        name="titulo"
-        value={tarea.titulo}
-        onChange={handleChange}
-        placeholder="Título"
-        required
-      />
-      <textarea
-        name="descripcion"
-        value={tarea.descripcion}
-        onChange={handleChange}
-        placeholder="Descripción"
-      />
-      <select
-        name="estado"
-        value={tarea.estado}
-        onChange={handleChange}
-        required
-      >
-        <option value="pendiente">Pendiente</option>
-        <option value="en progreso">En progreso</option>
-        <option value="completada">Completada</option>
-      </select>
-      <input
-        type="date"
-        name="fechaLimite"
-        value={tarea.fechaLimite?.split("T")[0]}
-        onChange={handleChange}
-        required
-      />
-      <input
-        type="color"
-        name="color"
-        value={tarea.color}
-        onChange={handleChange}
-      />
-      <button type="submit">
+    <form onSubmit={handleSubmit} className="card p-3">
+      <div className="mb-3">
+        <label htmlFor="titulo" className="form-label">
+          Título:{" "}
+        </label>
+        <input
+          type="text"
+          id="titulo"
+          className="form-control"
+          value={tarea.titulo}
+          onChange={handleChange}
+          placeholder="Título"
+          required
+        />
+      </div>
+      <div className="mb-3">
+        <label htmlFor="descripcion" className="form-label">
+          Descripción:{" "}
+        </label>
+        <textarea
+          id="descripcion"
+          value={tarea.descripcion}
+          onChange={handleChange}
+          placeholder="Descripción"
+        />
+      </div>
+      <div className="mb-3">
+        <label htmlFor="estado" className="form-label">
+          Estado:{" "}
+        </label>
+        <select
+          id="estado"
+          className="form-select"
+          value={tarea.estado}
+          onChange={handleChange}
+          required
+        >
+          <option value="pendiente">Pendiente</option>
+          <option value="en progreso">En progreso</option>
+          <option value="completada">Completada</option>
+        </select>
+      </div>
+      <div className="mb-3">
+        <label htmlFor="color" className="form-label">
+          Fecha límite:{" "}
+        </label>
+        <input
+          type="date"
+          id="fechaLimite"
+          value={tarea.fechaLimite?.split("T")[0]}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      <div className="mb-3">
+        <label htmlFor="color" className="form-label">
+          Color
+        </label>
+        <input
+          type="color"
+          id="color"
+          value={tarea.color}
+          onChange={handleChange}
+        />
+      </div>
+      <button type="submit" className="btn btn-success">
         {tareaInicial ? "Actualizar Tarea" : "Crear Tarea"}
       </button>
     </form>
