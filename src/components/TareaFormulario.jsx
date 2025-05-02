@@ -30,19 +30,22 @@ function TareaFormulario({ tareaInicial, onSubmit }) {
       descripcion: "",
       estado: "pendiente",
       fechaLimite: "",
-      color: "",
+      color: "#000000",
     });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="card p-3">
-      <div className="mb-3">
-        <label htmlFor="titulo" className="form-label">
-          Título:{" "}
+    <form
+      onSubmit={handleSubmit}
+      className="card p-4 mx-auto mt-4 tarea-formulario"
+    >
+      <div className="input-wrapper">
+        <label htmlFor="titulo" className="label-form">
+          Título:
         </label>
         <input
           type="text"
-          id="titulo"
+          name="titulo"
           className="form-control"
           value={tarea.titulo}
           onChange={handleChange}
@@ -50,23 +53,24 @@ function TareaFormulario({ tareaInicial, onSubmit }) {
           required
         />
       </div>
-      <div className="mb-3">
-        <label htmlFor="descripcion" className="form-label">
-          Descripción:{" "}
+      <div className="input-wrapper">
+        <label htmlFor="descripcion" className="label-form">
+          Descripción:
         </label>
         <textarea
-          id="descripcion"
+          name="descripcion"
+          className="form-control"
           value={tarea.descripcion}
           onChange={handleChange}
           placeholder="Descripción"
         />
       </div>
-      <div className="mb-3">
-        <label htmlFor="estado" className="form-label">
-          Estado:{" "}
+      <div className="input-wrapper">
+        <label htmlFor="estado" className="label-form">
+          Estado:
         </label>
         <select
-          id="estado"
+          name="estado"
           className="form-select"
           value={tarea.estado}
           onChange={handleChange}
@@ -77,32 +81,36 @@ function TareaFormulario({ tareaInicial, onSubmit }) {
           <option value="completada">Completada</option>
         </select>
       </div>
-      <div className="mb-3">
-        <label htmlFor="color" className="form-label">
-          Fecha límite:{" "}
+      <div className="input-wrapper">
+        <label htmlFor="fechaLimite" className="label-form">
+          Fecha límite:
         </label>
         <input
           type="date"
-          id="fechaLimite"
-          value={tarea.fechaLimite?.split("T")[0]}
+          name="fechaLimite"
+          className="form-control"
+          value={tarea.fechaLimite?.split("T")[0] || ""}
           onChange={handleChange}
           required
         />
       </div>
-      <div className="mb-3">
-        <label htmlFor="color" className="form-label">
-          Color
+      <div className="input-wrapper">
+        <label htmlFor="color" className="label-form">
+          Color:
         </label>
         <input
           type="color"
-          id="color"
+          name="color"
+          className="form-control form-control-color"
           value={tarea.color}
           onChange={handleChange}
         />
       </div>
-      <button type="submit" className="btn btn-success">
-        {tareaInicial ? "Actualizar Tarea" : "Crear Tarea"}
-      </button>
+      <div className="d-flex justify-content-end">
+        <button type="submit" className="btn btn-primary">
+          {tareaInicial ? "Actualizar Tarea" : "Crear Tarea"}
+        </button>
+      </div>
     </form>
   );
 }

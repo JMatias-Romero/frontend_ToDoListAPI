@@ -46,7 +46,9 @@ export const eliminarTarea = async (id) => {
   const res = await fetch(`${API}/${id}`, {
     method: "DELETE",
   });
+  const data = await res.json();
   if (!res.ok) {
-    throw new Error("Error al eliminar tarea");
+    throw new Error(data.message || "Error al eliminar tarea");
   }
+  return data;
 };

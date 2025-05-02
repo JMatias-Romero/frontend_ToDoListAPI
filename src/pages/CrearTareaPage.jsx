@@ -14,12 +14,7 @@ function CrearTareaPage() {
     }
   };
 
-  return (
-    <div>
-      <h2>Crear Nueva Tarea</h2>
-      <TareaFormulario onSubmit={handleSubmit} />
-    </div>
-  );
+  return <TareaFormulario onSubmit={handleSubmit} />;
 }
 
 export default CrearTareaPage;
