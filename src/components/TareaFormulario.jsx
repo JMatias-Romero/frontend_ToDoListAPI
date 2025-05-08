@@ -6,7 +6,7 @@ function TareaFormulario({ tareaInicial, onSubmit }) {
     descripcion: "",
     estado: "pendiente",
     fechaLimite: "",
-    color: "",
+    color: "#000000",
   });
 
   useEffect(() => {

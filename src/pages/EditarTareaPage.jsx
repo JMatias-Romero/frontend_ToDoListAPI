@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { obtenerTareaPorId, actualizarTarea } from "../api/tareasApi";
 import TareaFormulario from "../components/TareaFormulario";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 function EditarTareaPage() {
   const [tarea, setTarea] = useState(null);
@@ -15,17 +17,27 @@ function EditarTareaPage() {
         setTarea(datos);
       } catch (error) {
         console.error("Error al cargar tarea:", error);
+        toast.error("No se encontró la tarea solicitada");
+        navigate("/tareas");
       }
     }
     cargarTarea();
-  }, [id]);
+  }, [id, navigate]);
 
   const handleActualizarTarea = async (datosActualizados) => {
     try {
       await actualizarTarea(id, datosActualizados);
-      navigate("/");
+      Swal.fire({
+        icon: "success",
+        title: "Tarea actualizada",
+        text: "La tarea fue actualizada correctamente",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+      navigate("/tareas");
     } catch (error) {
       console.error("Error al actualizar tarea:", error);
+      toast.error("Error al actualizar la tarea");
     }
   };
 

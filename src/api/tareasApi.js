@@ -52,3 +52,10 @@ export const eliminarTarea = async (id) => {
   }
   return data;
 };
+
+//obtener tareas no asignadas a un sprint ni backlog
+export const obtenerTareasNoAsignadas = async () => {
+  const response = await fetch(`${API}/no-asignadas`);
+  if (!response.ok) throw new Error("Error al obtener tareas no asignadas");
+  return await response.json();
+};

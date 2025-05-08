@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import { obtenerTareas, crearTarea, eliminarTarea } from "../api/tareasApi";
+import { obtenerTareas, eliminarTarea } from "../api/tareasApi";
 import { Link } from "react-router-dom";
-import TareaFormulario from "../components/TareaFormulario";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 function TareasPage() {
   const [tareas, setTareas] = useState([]);
@@ -17,34 +19,32 @@ function TareasPage() {
     cargarTareas();
   }, []);
 
-  const handleCrearTarea = async (nuevaTarea) => {
-    try {
-      await crearTarea(nuevaTarea);
-      cargarTareas();
-    } catch (error) {
-      console.error("Error al crear tarea:", error);
-    }
-  };
-
+  const MySwal = withReactContent(Swal);
   const handleEliminarTarea = async (id) => {
-    const confirmacion = window.confirm(
-      "¿Estás seguro de que deseas eliminar esta tarea?"
-    );
-    if (!confirmacion) return;
-    try {
-      await eliminarTarea(id);
-      setTareas(tareas.filter((tarea) => tarea._id !== id));
-      cargarTareas();
-    } catch (error) {
-      if (
-        error.message.includes("asignada a un sprint") ||
-        error.message.includes("no puede eliminarse")
-      ) {
-        alert(
-          "La tarea no puede eliminarse porque se encuentra actualmente en un sprint"
-        );
-      } else {
-        alert("Error al eliminar la tarea. Intenta nuevamente.");
+    const result = await MySwal.fire({
+      title: "¿Eliminar tarea?",
+      text: "Esta acción no se puede deshacer",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    });
+    if (result.isConfirmed) {
+      try {
+        await eliminarTarea(id);
+        toast.success("Tarea eliminada");
+        setTareas(tareas.filter((tarea) => tarea._id !== id));
+        cargarTareas();
+      } catch (error) {
+        if (
+          error.message.includes("asignada a un sprint") ||
+          error.message.includes("no puede eliminarse")
+        ) {
+          toast.error("La tarea está en un sprint, no puede eliminarse");
+        } else {
+          toast.error("Ocurrió un error al eliminar la tarea");
+          console.error(error);
+        }
       }
     }
   };
