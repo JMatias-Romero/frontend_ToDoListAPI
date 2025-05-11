@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import { obtenerSprints } from "../api/sprintsApi";
+import { obtenerSprints, eliminarSprint } from "../api/sprintsApi";
 import { Link } from "react-router-dom";
-
-import { eliminarSprint } from "../api/sprintsApi";
 
 function SprintPage() {
   const [sprints, setSprints] = useState([]);
@@ -23,52 +21,69 @@ function SprintPage() {
     cargarSprints();
   }, []);
 
-  //eliminar sprints
   const handleEliminarSprint = async (id) => {
     try {
-      await eliminarSprint(id); // Llamada a la API para eliminar el sprint
-      setSprints(sprints.filter((sprint) => sprint._id !== id)); // Actualizar la lista local
+      await eliminarSprint(id);
+      setSprints(sprints.filter((sprint) => sprint._id !== id));
     } catch (error) {
       console.error("Error al eliminar el sprint:", error);
     }
   };
 
-  if (cargando) return <p>Cargando sprints...</p>;
-
-  if (sprints.length === 0) return <p>No hay sprints disponibles.</p>;
-
   return (
-    <div>
-      <h2>Lista de Sprints</h2>
-      <Link to="/crear-sprint">Crear Nuevo Sprint</Link>
-      <ul>
-        {sprints.map((sprint) => (
-          <li key={sprint._id}>
-            <h3>{sprint.nombreSprint}</h3>
-            <p>
-              Inicio: {new Date(sprint.fechaInicio).toLocaleDateString("es-ES")}
-            </p>
-            <p>Fin:{new Date(sprint.fechaFin).toLocaleDateString("es-ES")}</p>
+    <div className="container mt-4">
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2>Lista de Sprints</h2>
+        <Link to="/crear-sprint" className="btn btn-success">
+          Crear Nuevo Sprint
+        </Link>
+      </div>
 
-            {/* Listar las tareas dentro del sprint */}
-            <ul>
-              {sprint.tareas.length > 0 ? (
-                sprint.tareas.map((tarea) => (
+      {cargando ? (
+        <p>Cargando sprints...</p>
+      ) : sprints.length === 0 ? (
+        <p>No hay sprints disponibles.</p>
+      ) : (
+        sprints.map((sprint) => (
+          <div key={sprint._id} className="card p-3 mb-3">
+            <div className="d-flex justify-content-between align-items-center">
+              <h3 className="mb-0">{sprint.nombreSprint}</h3>
+              <div>
+                <Link
+                  to={`/editar-sprint/${sprint._id}`}
+                  className="btn btn-sm btn-secondary me-2"
+                >
+                  Editar
+                </Link>
+                <button
+                  onClick={() => handleEliminarSprint(sprint._id)}
+                  className="btn btn-sm btn-danger"
+                >
+                  Eliminar
+                </button>
+              </div>
+            </div>
+            <p className="mt-2">
+              <strong>Inicio:</strong>{" "}
+              {new Date(sprint.fechaInicio).toLocaleDateString("es-ES")}
+              <br />
+              <strong>Fin:</strong>{" "}
+              {new Date(sprint.fechaFin).toLocaleDateString("es-ES")}
+            </p>
+            {sprint.tareas.length === 0 ? (
+              <p className="mt-2">No hay tareas en este sprint.</p>
+            ) : (
+              <ul className="mt-2">
+                {sprint.tareas.map((tarea) => (
                   <li key={tarea._id}>
                     {tarea.titulo} - {tarea.estado}
                   </li>
-                ))
-              ) : (
-                <li>No hay tareas en este sprint.</li>
-              )}
-            </ul>
-            <Link to={`/editar-sprint/${sprint._id}`}>Editar</Link>
-            <button onClick={() => handleEliminarSprint(sprint._id)}>
-              Eliminar
-            </button>
-          </li>
-        ))}
-      </ul>
+                ))}
+              </ul>
+            )}
+          </div>
+        ))
+      )}
     </div>
   );
 }

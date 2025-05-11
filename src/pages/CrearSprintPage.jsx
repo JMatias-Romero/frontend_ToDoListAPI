@@ -1,24 +1,33 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import SprintFormulario from "../components/SprintFormulario"; // Importamos el formulario
-import { crearSprint } from "../api/sprintsApi"; // Importamos la API para crear un sprint
+
+//import de apis
+import { crearSprint } from "../api/sprintsApi";
+
+//import de formulario
+import SprintFormulario from "../components/SprintFormulario";
+
+//librerias de mensajes
+import Swal from "sweetalert2";
+import { toast } from "react-toastify";
 
 function CrearSprintPage() {
   const navigate = useNavigate();
 
-  // Función que maneja la creación de un sprint
   const handleCrearSprint = async (sprint) => {
     try {
-      await crearSprint(sprint); // Llamada a la API para crear el sprint
-      navigate("/sprints"); // Redirige a la lista de sprints después de crear
+      await crearSprint(sprint);
+      toast.success("Sprint creado correctamente");
+      navigate("/sprints");
     } catch (error) {
       console.error("Error al crear el sprint:", error);
+      Swal.fire("Error", "No se pudo crear el sprint.", "error");
     }
   };
 
   return (
-    <div>
-      <h2>Crear Nuevo Sprint</h2>
+    <div className="container mt-4">
+      <h2 className="mb-4">Crear Nuevo Sprint</h2>
       <SprintFormulario onSubmit={handleCrearSprint} />
     </div>
   );

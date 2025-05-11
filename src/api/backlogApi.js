@@ -35,3 +35,13 @@ export const actualizarBacklog = async (id, datos) => {
   if (!respuesta.ok) throw new Error("Error al actualizar el backlog");
   return await respuesta.json();
 };
+
+// Eliminar backlog
+export const eliminarBacklog = async (id) => {
+  const res = await fetch(`${API}/${id}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) {
+    throw new Error("Error al eliminar el backlog");
+  }
+};
